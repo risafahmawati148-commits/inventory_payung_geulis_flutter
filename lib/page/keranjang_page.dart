@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../config/api.dart';
 import '../model/cart_data.dart';
 import 'checkout_page.dart';
 
@@ -11,8 +12,23 @@ class KeranjangPage extends StatefulWidget {
 }
 
 class _KeranjangPageState extends State<KeranjangPage> {
-  static const Color primaryColor = Color(0xFFFFB6A3);
-  static const Color textColor = Color(0xFF5C4033);
+  static const Color primaryColor = Color(0xFF6B1A2A);
+  static const Color textColor = Color(0xFF3D0C14);
+  static const Color subtleText = Color(0xFF8B5E6B);
+
+  String _formatRupiah(int number) {
+    final str = number.toString();
+    String result = '';
+    int count = 0;
+    for (int i = str.length - 1; i >= 0; i--) {
+      result = str[i] + result;
+      count++;
+      if (count % 3 == 0 && i != 0) {
+        result = '.' + result;
+      }
+    }
+    return 'Rp $result';
+  }
 
   int get totalBelanja {
     int total = 0;
@@ -27,9 +43,10 @@ class _KeranjangPageState extends State<KeranjangPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF9F7),
+      backgroundColor: const Color(0xFFFAF3E0),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text(
           "Keranjang Saya",
           style: TextStyle(
@@ -40,11 +57,24 @@ class _KeranjangPageState extends State<KeranjangPage> {
       ),
       body: CartData.items.isEmpty
           ? const Center(
-              child: Text(
-                "Keranjang masih kosong",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 80,
+                    color: primaryColor,
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    "Keranjang masih kosong",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                ],
               ),
             )
           : Column(
@@ -56,29 +86,30 @@ class _KeranjangPageState extends State<KeranjangPage> {
                       final item = CartData.items[index];
 
                       return Card(
-                        margin: const EdgeInsets.all(10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 8,
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(15),
+                          padding: const EdgeInsets.all(12),
                           child: Row(
                             children: [
                               ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(16),
                                 child: Image.network(
-                                  item.gambar,
-                                  width: 90,
-                                  height: 90,
+                                  getFullImageUrl(item.gambar),
+                                  width: 80,
+                                  height: 80,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
-                                      width: 90,
-                                      height: 90,
-                                      color: Colors.grey.shade200,
+                                      width: 80,
+                                      height: 80,
+                                      color: const Color(0xFFFFFBF0),
                                       child: const Icon(
-                                        Icons.image,
-                                        size: 40,
+                                        Icons.image_rounded,
+                                        size: 30,
+                                        color: primaryColor,
                                       ),
                                     );
                                   },
@@ -92,50 +123,80 @@ class _KeranjangPageState extends State<KeranjangPage> {
                                     Text(
                                       item.namaProduk,
                                       style: const TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                         color: textColor,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    const SizedBox(height: 10),
+                                    const SizedBox(height: 6),
                                     Text(
-                                      "Rp ${item.harga}",
+                                      _formatRupiah(item.harga),
                                       style: const TextStyle(
                                         color: primaryColor,
                                         fontWeight: FontWeight.bold,
+                                        fontSize: 14,
                                       ),
                                     ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              if (item.qty > 1) {
-                                                item.qty--;
-                                              }
-                                            });
-                                          },
-                                          icon: const Icon(
-                                            Icons.remove_circle,
-                                            color: primaryColor,
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFFFBF0),
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: const Color(0xFFD4A0A8),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                if (item.qty > 1) {
+                                                  item.qty--;
+                                                }
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.remove_rounded,
+                                              color: primaryColor,
+                                              size: 18,
+                                            ),
+                                            constraints: const BoxConstraints(),
+                                            padding: const EdgeInsets.all(6),
                                           ),
-                                        ),
-                                        Text(
-                                          item.qty.toString(),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              item.qty++;
-                                            });
-                                          },
-                                          icon: const Icon(
-                                            Icons.add_circle,
-                                            color: primaryColor,
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                            ),
+                                            child: Text(
+                                              item.qty.toString(),
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                                color: textColor,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                item.qty++;
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.add_rounded,
+                                              color: primaryColor,
+                                              size: 18,
+                                            ),
+                                            constraints: const BoxConstraints(),
+                                            padding: const EdgeInsets.all(6),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -143,14 +204,13 @@ class _KeranjangPageState extends State<KeranjangPage> {
                               IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    CartData.items.removeAt(
-                                      index,
-                                    );
+                                    CartData.items.removeAt(index);
                                   });
                                 },
                                 icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
+                                  Icons.delete_outline_rounded,
+                                  color: Color(0xFFE57373),
+                                  size: 26,
                                 ),
                               ),
                             ],
@@ -161,12 +221,25 @@ class _KeranjangPageState extends State<KeranjangPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: const BoxDecoration(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+                  decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(25),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(30),
                     ),
+                    border: const Border(
+                      top: BorderSide(
+                        color: Color(0xFFD4A0A8),
+                        width: 1.5,
+                      ),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF6B1A2A).withOpacity(0.06),
+                        blurRadius: 15,
+                        offset: const Offset(0, -5),
+                      ),
+                    ],
                   ),
                   child: Column(
                     children: [
@@ -176,11 +249,13 @@ class _KeranjangPageState extends State<KeranjangPage> {
                           const Text(
                             "Total Belanja",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: subtleText,
                             ),
                           ),
                           Text(
-                            "Rp $totalBelanja",
+                            _formatRupiah(totalBelanja),
                             style: const TextStyle(
                               color: primaryColor,
                               fontSize: 22,
@@ -193,27 +268,22 @@ class _KeranjangPageState extends State<KeranjangPage> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryColor,
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(
-                              double.infinity,
-                              55,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                15,
-                              ),
-                            ),
-                          ),
                           onPressed: () {
                             if (CartData.items.isEmpty) {
-                              ScaffoldMessenger.of(
-                                context,
-                              ).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: primaryColor,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  content: const Text(
                                     "Keranjang masih kosong",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Quicksand',
+                                    ),
                                   ),
                                 ),
                               );
@@ -232,10 +302,6 @@ class _KeranjangPageState extends State<KeranjangPage> {
                           },
                           child: const Text(
                             "Checkout",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
                           ),
                         ),
                       ),

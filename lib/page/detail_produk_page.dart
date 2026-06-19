@@ -24,19 +24,34 @@ class DetailProdukPage extends StatefulWidget {
 }
 
 class _DetailProdukPageState extends State<DetailProdukPage> {
-  static const Color primaryColor = Color(0xFFFFB6A3);
-  static const Color textColor = Color(0xFF5C4033);
+  static const Color primaryColor = Color(0xFF6B1A2A);
+  static const Color textColor = Color(0xFF3D0C14);
+  static const Color subtleText = Color(0xFF8B5E6B);
 
   int qty = 1;
+
+  String _formatRupiah(int number) {
+    final str = number.toString();
+    String result = '';
+    int count = 0;
+    for (int i = str.length - 1; i >= 0; i--) {
+      result = str[i] + result;
+      count++;
+      if (count % 3 == 0 && i != 0) {
+        result = '.' + result;
+      }
+    }
+    return 'Rp $result';
+  }
 
   @override
   Widget build(BuildContext context) {
     int total = widget.harga * qty;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF9F7),
+      backgroundColor: const Color(0xFFFAF3E0),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: textColor,
         title: const Text(
@@ -53,19 +68,36 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             Container(
               height: 320,
               width: double.infinity,
-              color: Colors.white,
-              child: Image.network(
-                getFullImageUrl(widget.gambar),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(
-                      Icons.image,
-                      size: 100,
-                      color: Colors.grey,
-                    ),
-                  );
-                },
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(30),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x0A6B1A2A),
+                    blurRadius: 15,
+                    offset: Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(30),
+                ),
+                child: Image.network(
+                  getFullImageUrl(widget.gambar),
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Icon(
+                        Icons.image_rounded,
+                        size: 80,
+                        color: primaryColor,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
 
@@ -84,16 +116,25 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
 
                   /// RATING
                   const Row(
                     children: [
-                      Icon(Icons.star, color: Colors.amber),
-                      Icon(Icons.star, color: Colors.amber),
-                      Icon(Icons.star, color: Colors.amber),
-                      Icon(Icons.star, color: Colors.amber),
-                      Icon(Icons.star_half, color: Colors.amber),
+                      Icon(Icons.star_rounded, color: Colors.amber, size: 22),
+                      Icon(Icons.star_rounded, color: Colors.amber, size: 22),
+                      Icon(Icons.star_rounded, color: Colors.amber, size: 22),
+                      Icon(Icons.star_rounded, color: Colors.amber, size: 22),
+                      Icon(Icons.star_half_rounded, color: Colors.amber, size: 22),
+                      SizedBox(width: 6),
+                      Text(
+                        "(4.5)",
+                        style: TextStyle(
+                          color: subtleText,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ],
                   ),
 
@@ -101,15 +142,15 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
 
                   /// HARGA
                   Text(
-                    "Rp ${widget.harga}",
+                    _formatRupiah(widget.harga),
                     style: const TextStyle(
                       color: primaryColor,
-                      fontSize: 28,
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 25),
+                  const Divider(height: 40, color: Color(0xFFD4A0A8), thickness: 1.5),
 
                   /// DESKRIPSI
                   const Text(
@@ -121,78 +162,109 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
 
                   Text(
                     widget.deskripsi,
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
+                    style: const TextStyle(
+                      color: subtleText,
                       height: 1.5,
+                      fontSize: 14,
                     ),
                   ),
 
-                  const SizedBox(height: 30),
+                  const Divider(height: 40, color: Color(0xFFD4A0A8), thickness: 1.5),
 
                   /// JUMLAH
-                  const Text(
-                    "Jumlah",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          if (qty > 1) {
-                            setState(() {
-                              qty--;
-                            });
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.remove_circle,
-                          color: primaryColor,
-                          size: 35,
-                        ),
-                      ),
-                      Text(
-                        qty.toString(),
-                        style: const TextStyle(
-                          fontSize: 20,
+                      const Text(
+                        "Jumlah",
+                        style: TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: textColor,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            qty++;
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.add_circle,
-                          color: primaryColor,
-                          size: 35,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFFBF0),
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                            color: const Color(0xFFD4A0A8),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                if (qty > 1) {
+                                  setState(() {
+                                    qty--;
+                                  });
+                                }
+                              },
+                              icon: const Icon(
+                                Icons.remove_rounded,
+                                color: primaryColor,
+                                size: 22,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text(
+                                qty.toString(),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  qty++;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.add_rounded,
+                                color: primaryColor,
+                                size: 22,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
 
                   /// TOTAL
-                  Text(
-                    "Total : Rp $total",
-                    style: const TextStyle(
-                      color: primaryColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Total Harga",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: subtleText,
+                        ),
+                      ),
+                       Text(
+                        _formatRupiah(total),
+                        style: const TextStyle(
+                          color: primaryColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 30),
@@ -202,16 +274,8 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(
-                          double.infinity,
-                          55,
-                        ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            15,
-                          ),
+                          borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                       onPressed: () {
@@ -229,21 +293,26 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: primaryColor,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                             content: Text(
                               "${widget.namaProduk} berhasil ditambahkan ke keranjang",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Quicksand',
+                              ),
                             ),
                           ),
                         );
                       },
                       icon: const Icon(
-                        Icons.shopping_cart,
+                        Icons.shopping_cart_rounded,
                       ),
                       label: const Text(
                         "Tambah Keranjang",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
                     ),
                   ),
@@ -255,28 +324,43 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     width: double.infinity,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(
-                          double.infinity,
-                          55,
-                        ),
-                        foregroundColor: primaryColor,
-                        side: const BorderSide(
-                          color: primaryColor,
-                          width: 2,
-                        ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            15,
-                          ),
+                          borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        CartData.items.add(
+                          CartModel(
+                            id: widget.id,
+                            namaProduk: widget.namaProduk,
+                            gambar: widget.gambar,
+                            deskripsi: widget.deskripsi,
+                            harga: widget.harga,
+                            qty: qty,
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: primaryColor,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            content: const Text(
+                              "Melanjutkan ke Keranjang Saya",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Quicksand',
+                              ),
+                            ),
+                          ),
+                        );
+                        // Navigate to Keranjang or pop to main and switch to cart tab
+                        Navigator.pop(context);
+                      },
                       child: const Text(
                         "Beli Sekarang",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
                     ),
                   ),

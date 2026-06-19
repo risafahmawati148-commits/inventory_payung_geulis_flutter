@@ -18,7 +18,10 @@ class _ProdukPageState extends State<ProdukPage> {
 
   final String baseUrl = "http://192.168.20.28:8000";
 
-  static const Color gold = Color(0xFFD4AF37);
+  static const Color primaryColor = Color(0xFF6B1A2A);
+  static const Color textColor = Color(0xFF3D0C14);
+  static const Color subtleText = Color(0xFF8B5E6B);
+  static const Color gold = Color(0xFFB8860B);
 
   @override
   void initState() {
@@ -63,6 +66,7 @@ class _ProdukPageState extends State<ProdukPage> {
   Widget build(BuildContext context) {
     if (loading) {
       return const Scaffold(
+        backgroundColor: Color(0xFFFAF3E0),
         body: Center(
           child: CircularProgressIndicator(),
         ),
@@ -70,12 +74,16 @@ class _ProdukPageState extends State<ProdukPage> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFFFAF3E0),
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: gold,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: textColor,
         title: const Text(
           "Produk Payung Geulis",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: GridView.builder(
@@ -92,11 +100,19 @@ class _ProdukPageState extends State<ProdukPage> {
 
           return Container(
             decoration: BoxDecoration(
-              color: Colors.grey.shade900,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: gold,
+                color: const Color(0xFFD4A0A8),
+                width: 1.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -147,13 +163,13 @@ class _ProdukPageState extends State<ProdukPage> {
                           );
 
                           return Container(
-                            color: Colors.grey.shade800,
+                            color: const Color(0xFFFFFBF0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Icon(
                                   Icons.broken_image,
-                                  color: Colors.white,
+                                  color: primaryColor,
                                   size: 50,
                                 ),
                                 SizedBox(
@@ -162,7 +178,7 @@ class _ProdukPageState extends State<ProdukPage> {
                                 Text(
                                   "Gambar tidak ditemukan",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: textColor,
                                   ),
                                 ),
                               ],
@@ -181,7 +197,7 @@ class _ProdukPageState extends State<ProdukPage> {
                       Text(
                         item["nama_produk"] ?? "-",
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: textColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -191,7 +207,7 @@ class _ProdukPageState extends State<ProdukPage> {
                       Text(
                         "Rp ${item["harga"]}",
                         style: const TextStyle(
-                          color: gold,
+                          color: primaryColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -202,13 +218,13 @@ class _ProdukPageState extends State<ProdukPage> {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: gold,
+                            backgroundColor: primaryColor,
                           ),
                           onPressed: () {},
                           child: const Text(
                             "Beli",
                             style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                         ),

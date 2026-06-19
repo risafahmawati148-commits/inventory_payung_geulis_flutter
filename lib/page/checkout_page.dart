@@ -16,8 +16,9 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  static const Color primaryColor = Color(0xFFFFB6A3);
-  static const Color textColor = Color(0xFF5C4033);
+  static const Color primaryColor = Color(0xFF6B1A2A);
+  static const Color textColor = Color(0xFF3D0C14);
+  static const Color subtleText = Color(0xFF8B5E6B);
 
   final namaController = TextEditingController();
   final alamatController = TextEditingController();
@@ -27,13 +28,32 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   bool loading = false;
 
+  String _formatRupiah(int number) {
+    final str = number.toString();
+    String result = '';
+    int count = 0;
+    for (int i = str.length - 1; i >= 0; i--) {
+      result = str[i] + result;
+      count++;
+      if (count % 3 == 0 && i != 0) {
+        result = '.' + result;
+      }
+    }
+    return 'Rp $result';
+  }
+
   Future<void> buatPesanan() async {
     if (namaController.text.isEmpty ||
         alamatController.text.isEmpty ||
         nohpController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
+        SnackBar(
+          backgroundColor: primaryColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          content: const Text(
             "Lengkapi data terlebih dahulu",
           ),
         ),
@@ -71,8 +91,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
       CartData.items.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
+        SnackBar(
+          backgroundColor: primaryColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          content: const Text(
             "Pesanan berhasil dibuat",
           ),
         ),
@@ -81,8 +106,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
       Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
+        SnackBar(
+          backgroundColor: primaryColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          content: const Text(
             "Checkout gagal",
           ),
         ),
@@ -93,9 +123,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF9F7),
+      backgroundColor: const Color(0xFFFAF3E0),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text(
           "Checkout",
           style: TextStyle(
@@ -114,17 +145,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
               style: TextStyle(
                 color: textColor,
                 fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             TextField(
               controller: namaController,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
+              decoration: const InputDecoration(
+                hintText: "Masukkan nama penerima...",
               ),
             ),
             const SizedBox(height: 20),
@@ -133,75 +161,80 @@ class _CheckoutPageState extends State<CheckoutPage> {
               style: TextStyle(
                 color: textColor,
                 fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             TextField(
               controller: nohpController,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                hintText: "Masukkan nomor HP...",
               ),
             ),
             const SizedBox(height: 20),
             const Text(
-              "Alamat",
+              "Alamat Lengkap",
               style: TextStyle(
                 color: textColor,
                 fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             TextField(
               controller: alamatController,
               maxLines: 3,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
+              decoration: const InputDecoration(
+                hintText: "Masukkan alamat lengkap...",
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
                 ),
               ),
             ),
-            const SizedBox(height: 30),
-            Text(
-              "Total Belanja : Rp ${widget.total}",
-              style: const TextStyle(
-                color: primaryColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-              ),
+            const SizedBox(height: 35),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Total Pembayaran",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: subtleText,
+                  ),
+                ),
+                 Text(
+                  _formatRupiah(widget.total),
+                  style: const TextStyle(
+                    color: primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 35),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(
-                    double.infinity,
-                    55,
-                  ),
-                ),
                 onPressed: loading
                     ? null
                     : () {
                         buatPesanan();
                       },
                 child: loading
-                    ? const CircularProgressIndicator(
-                        color: Colors.white,
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
                       )
                     : const Text(
                         "Buat Pesanan",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
                       ),
               ),
             ),
