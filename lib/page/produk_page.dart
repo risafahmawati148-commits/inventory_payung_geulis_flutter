@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../config/api.dart';
 import 'detail_produk_page.dart';
 
 class ProdukPage extends StatefulWidget {
@@ -16,7 +17,7 @@ class _ProdukPageState extends State<ProdukPage> {
   List produk = [];
   bool loading = true;
 
-  final String baseUrl = "http://192.168.20.28:8000";
+  final String baseUrl = Api.baseUrl;
 
   static const Color primaryColor = Color(0xFF6B1A2A);
   static const Color textColor = Color(0xFF3D0C14);
