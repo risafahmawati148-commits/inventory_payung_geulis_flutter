@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../model/cart_data.dart';
+import '../model/user_model.dart';
 import '../service/pesanan_service.dart';
+import 'dashboard_page.dart';
 
 class CheckoutPage extends StatefulWidget {
   final int total;
@@ -20,9 +22,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
   static const Color textColor = Color(0xFF3D0C14);
   static const Color subtleText = Color(0xFF8B5E6B);
 
-  final namaController = TextEditingController();
+  late final TextEditingController namaController;
   final alamatController = TextEditingController();
   final nohpController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    namaController = TextEditingController(text: UserModel.currentUser?.nama ?? "");
+  }
+
+  @override
+  void dispose() {
+    namaController.dispose();
+    alamatController.dispose();
+    nohpController.dispose();
+    super.dispose();
+  }
 
   String metodePembayaran = "COD";
 
@@ -81,6 +97,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       jumlah: jumlah,
       totalHarga: widget.total,
       alamat: alamatController.text,
+      email: UserModel.currentUser?.email ?? "",
     );
 
     setState(() {
@@ -103,7 +120,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       );
 
-      Navigator.pop(context);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const DashboardPage(initialIndex: 0),
+        ),
+        (route) => false,
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

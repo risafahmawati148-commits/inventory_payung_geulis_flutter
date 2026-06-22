@@ -16,6 +16,7 @@ class PesananService {
     required int jumlah,
     required int totalHarga,
     required String alamat,
+    required String email,
   }) async {
     try {
       final response = await http.post(
@@ -26,6 +27,7 @@ class PesananService {
           "jumlah": jumlah.toString(),
           "total_harga": totalHarga.toString(),
           "alamat": alamat,
+          "email": email,
         },
       );
 
@@ -47,10 +49,10 @@ class PesananService {
   |--------------------------------------------------------------------------
   */
 
-  static Future<List> getPesanan() async {
+  static Future<List> getPesanan({String email = ""}) async {
     try {
       final response = await http.get(
-        Uri.parse(Api.pesanan),
+        Uri.parse("${Api.pesanan}?email=$email"),
       );
 
       if (response.statusCode == 200) {

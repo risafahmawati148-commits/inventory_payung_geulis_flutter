@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../config/api.dart';
 import '../model/cart_data.dart';
 import '../model/cart_model.dart';
+import 'checkout_page.dart';
 
 class DetailProdukPage extends StatefulWidget {
   final int id;
@@ -339,25 +340,12 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                             qty: qty,
                           ),
                         );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: primaryColor,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            content: const Text(
-                              "Melanjutkan ke Keranjang Saya",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Quicksand',
-                              ),
-                            ),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CheckoutPage(total: total),
                           ),
                         );
-                        // Navigate to Keranjang or pop to main and switch to cart tab
-                        Navigator.pop(context);
                       },
                       child: const Text(
                         "Beli Sekarang",

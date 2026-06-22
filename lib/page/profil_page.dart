@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../model/user_model.dart';
 import 'login_page.dart';
 
 class ProfilPage extends StatefulWidget {
@@ -14,8 +15,15 @@ class _ProfilPageState extends State<ProfilPage> {
   static const Color subtleText = Color(0xFF8B5E6B);
 
   // Menyimpan data profile di State agar dapat diubah secara dinamis
-  String userName = "Lisna Andrianti";
-  String userEmail = "lisna@gmail.com";
+  late String userName;
+  late String userEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    userName = UserModel.currentUser?.nama ?? "";
+    userEmail = UserModel.currentUser?.email ?? "";
+  }
 
   // ─────────────────────────────────────────────
   //  1. Dialog Edit Profil
@@ -72,6 +80,14 @@ class _ProfilPageState extends State<ProfilPage> {
                 setState(() {
                   userName = nameCtrl.text;
                   userEmail = emailCtrl.text;
+                  if (UserModel.currentUser != null) {
+                    UserModel.currentUser = UserModel(
+                      id: UserModel.currentUser!.id,
+                      nama: userName,
+                      email: userEmail,
+                      token: UserModel.currentUser!.token,
+                    );
+                  }
                 });
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -299,6 +315,7 @@ class _ProfilPageState extends State<ProfilPage> {
             ),
             onPressed: () {
               Navigator.pop(context); // Tutup dialog
+              UserModel.currentUser = null; // Clear session
               // Redirect ke Login & bersihkan tumpukan navigasi
               Navigator.pushAndRemoveUntil(
                 context,

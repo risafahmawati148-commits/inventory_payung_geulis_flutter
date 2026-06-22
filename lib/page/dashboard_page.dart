@@ -7,7 +7,8 @@ import 'pesanan_page.dart';
 import 'profil_page.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final int initialIndex;
+  const DashboardPage({super.key, this.initialIndex = 0});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -16,7 +17,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   static const Color primaryColor = Color(0xFF6B1A2A); // Merah marun tua
 
-  int currentIndex = 0;
+  late int currentIndex;
 
   final List<Widget> pages = const [
     HomePage(),
@@ -24,6 +25,12 @@ class _DashboardPageState extends State<DashboardPage> {
     PesananPage(),
     ProfilPage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = widget.initialIndex;
+  }
 
   Widget _buildNavItem({
     required int index,

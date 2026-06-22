@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../service/auth_service.dart';
 import '../model/user_model.dart';
 import 'dashboard_page.dart';
-import 'register_page.dart';
+import 'login_page.dart';
 
 // ─────────────────────────────────────────────
 //  Konstanta Warna Payung Geulis
@@ -18,7 +18,7 @@ const Color _textDark    = Color(0xFF3D0C14);
 const Color _textSub     = Color(0xFF8B5E6B);
 
 // ─────────────────────────────────────────────
-//  Custom Painter — Pola Batik Parang (sangat tipis)
+//  Custom Painter — Pola Batik Parang
 // ─────────────────────────────────────────────
 class _ParangPainter extends CustomPainter {
   @override
@@ -33,7 +33,6 @@ class _ParangPainter extends CustomPainter {
 
     for (double y = -step; y < size.height + step * 2; y += step) {
       for (double x = -step; x < size.width + step * 2; x += step) {
-        // Lengkungan diagonal kiri-bawah ke kanan-atas (motif parang)
         final path = Path();
         path.moveTo(x, y);
         path.relativeCubicTo(
@@ -43,7 +42,6 @@ class _ParangPainter extends CustomPainter {
         );
         canvas.drawPath(path, paint);
 
-        // Garis kecil tegak diagonal — isian batik
         final paint2 = Paint()
           ..color = _maroon.withOpacity(0.03)
           ..strokeWidth = 0.8
@@ -67,7 +65,7 @@ class _ParangPainter extends CustomPainter {
 // ─────────────────────────────────────────────
 class _PayungGeulisIcon extends StatelessWidget {
   final double size;
-  const _PayungGeulisIcon({this.size = 90});
+  const _PayungGeulisIcon({this.size = 80});
 
   @override
   Widget build(BuildContext context) {
@@ -194,21 +192,22 @@ class _PayungPainter extends CustomPainter {
 }
 
 // ─────────────────────────────────────────────
-//  Login Page
+//  Register Page
 // ─────────────────────────────────────────────
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage>
+class _RegisterPageState extends State<RegisterPage>
     with SingleTickerProviderStateMixin {
+  final _namaController     = TextEditingController();
   final _emailController    = TextEditingController();
   final _passwordController = TextEditingController();
 
-  bool _loading     = false;
+  bool _loading      = false;
   bool _hidePassword = true;
 
   late AnimationController _animCtrl;
@@ -234,18 +233,21 @@ class _LoginPageState extends State<LoginPage>
   @override
   void dispose() {
     _animCtrl.dispose();
+    _namaController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+  Future<void> _register() async {
+    if (_namaController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: _maroon,
           content: const Text(
-            'Lengkapi alamat email dan kata sandi',
+            'Lengkapi nama lengkap, alamat email, dan kata sandi',
             style: TextStyle(color: Colors.white),
           ),
           behavior: SnackBarBehavior.floating,
@@ -257,7 +259,8 @@ class _LoginPageState extends State<LoginPage>
 
     setState(() => _loading = true);
 
-    UserModel? user = await AuthService.login(
+    UserModel? user = await AuthService.register(
+      nama:     _namaController.text,
       email:    _emailController.text,
       password: _passwordController.text,
     );
@@ -270,23 +273,24 @@ class _LoginPageState extends State<LoginPage>
         SnackBar(
           backgroundColor: _maroon,
           content: Text(
-            'Selamat datang, ${user.nama}!',
+            'Registrasi berhasil! Selamat datang, ${user.nama}',
             style: const TextStyle(color: Colors.white),
           ),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const DashboardPage()),
+        (route) => false,
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: _maroon,
           content: const Text(
-            'Alamat email atau kata sandi salah',
+            'Registrasi gagal. Silakan coba kembali.',
             style: TextStyle(color: Colors.white),
           ),
           behavior: SnackBarBehavior.floating,
@@ -299,18 +303,12 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ── Latar belakang krem + pola batik Parang
       body: Stack(
         children: [
-          // Layer 1: Warna dasar krem
           Container(color: _cream),
-
-          // Layer 2: Pola Batik Parang (sangat tipis)
           Positioned.fill(
             child: CustomPaint(painter: _ParangPainter()),
           ),
-
-          // Layer 3: Gradien halus dari atas
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -326,8 +324,6 @@ class _LoginPageState extends State<LoginPage>
               ),
             ),
           ),
-
-          // Layer 4: Konten utama
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
@@ -337,12 +333,10 @@ class _LoginPageState extends State<LoginPage>
                   position: _slideAnim,
                   child: Column(
                     children: [
-                      const SizedBox(height: 32),
-
-                      // ── Lingkaran emas di balik ikon payung
+                      const SizedBox(height: 24),
                       Container(
-                        width: 120,
-                        height: 120,
+                        width: 110,
+                        height: 110,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
@@ -364,17 +358,14 @@ class _LoginPageState extends State<LoginPage>
                           ],
                         ),
                         child: Center(
-                          child: _PayungGeulisIcon(size: 80),
+                          child: _PayungGeulisIcon(size: 72),
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      // ── Nama brand
+                      const SizedBox(height: 16),
                       Text(
                         'PAYUNG GEULIS',
                         style: TextStyle(
-                          fontSize: 26,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 2.8,
                           color: _textDark,
@@ -387,11 +378,9 @@ class _LoginPageState extends State<LoginPage>
                           ],
                         ),
                       ),
-
-                      // Garis ornamental emas
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 60, vertical: 8),
+                            horizontal: 60, vertical: 6),
                         child: Row(
                           children: [
                             Expanded(
@@ -404,7 +393,7 @@ class _LoginPageState extends State<LoginPage>
                               padding: const EdgeInsets.symmetric(horizontal: 8),
                               child: Icon(
                                 Icons.auto_awesome,
-                                size: 12,
+                                size: 10,
                                 color: _gold.withOpacity(0.7),
                               ),
                             ),
@@ -417,20 +406,7 @@ class _LoginPageState extends State<LoginPage>
                           ],
                         ),
                       ),
-
-                      Text(
-                        'Sistem Inventori',
-                        style: TextStyle(
-                          fontSize: 13,
-                          letterSpacing: 1.0,
-                          color: _textSub,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // ── Card Form Login
+                      const SizedBox(height: 20),
                       Container(
                         decoration: BoxDecoration(
                           color: const Color(0xFFFFFBF0),
@@ -451,9 +427,8 @@ class _LoginPageState extends State<LoginPage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Judul form
                             Text(
-                              'Masuk ke Akun',
+                              'Daftar Akun Baru',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -462,14 +437,42 @@ class _LoginPageState extends State<LoginPage>
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Selamat datang kembali',
+                              'Lengkapi formulir untuk bergabung',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: _textSub,
                               ),
                             ),
-
                             const SizedBox(height: 22),
+
+                            // ── Nama Lengkap
+                            TextField(
+                              controller: _namaController,
+                              style: const TextStyle(
+                                color: _textDark,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              decoration: InputDecoration(
+                                labelText: 'Nama Lengkap',
+                                hintText: 'Masukkan nama lengkap Anda',
+                                prefixIcon: const Icon(Icons.person_outline),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                  borderSide: const BorderSide(
+                                    color: _maroon,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                  borderSide: const BorderSide(
+                                    color: _maroonLight,
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 18),
 
                             // ── Alamat Email
                             TextField(
@@ -499,7 +502,6 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                               ),
                             ),
-
                             const SizedBox(height: 18),
 
                             // ── Kata Sandi
@@ -539,15 +541,14 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                               ),
                             ),
-
                             const SizedBox(height: 28),
 
-                            // ── Tombol Masuk
+                            // ── Tombol Daftar
                             SizedBox(
                               width: double.infinity,
                               height: 54,
                               child: ElevatedButton(
-                                onPressed: _loading ? null : _login,
+                                onPressed: _loading ? null : _register,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: _maroon,
                                   foregroundColor: Colors.white,
@@ -567,7 +568,7 @@ class _LoginPageState extends State<LoginPage>
                                         ),
                                       )
                                     : const Text(
-                                        'Masuk',
+                                        'Daftar',
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -576,17 +577,16 @@ class _LoginPageState extends State<LoginPage>
                                       ),
                               ),
                             ),
-
                             const SizedBox(height: 16),
 
-                            // ── Link Daftar
+                            // ── Link Masuk
                             Center(
                               child: TextButton(
                                 onPressed: () {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => const RegisterPage(),
+                                      builder: (_) => const LoginPage(),
                                     ),
                                   );
                                 },
@@ -598,9 +598,9 @@ class _LoginPageState extends State<LoginPage>
                                       fontFamily: 'Quicksand',
                                     ),
                                     children: const [
-                                      TextSpan(text: 'Belum punya akun? '),
+                                      TextSpan(text: 'Sudah punya akun? '),
                                       TextSpan(
-                                        text: 'Daftar',
+                                        text: 'Masuk',
                                         style: TextStyle(
                                           color: _maroon,
                                           fontWeight: FontWeight.bold,
@@ -616,10 +616,7 @@ class _LoginPageState extends State<LoginPage>
                           ],
                         ),
                       ),
-
-                      const SizedBox(height: 32),
-
-                      // Footer ornamental
+                      const SizedBox(height: 24),
                       Text(
                         '— Payung Geulis, Tasikmalaya —',
                         style: TextStyle(

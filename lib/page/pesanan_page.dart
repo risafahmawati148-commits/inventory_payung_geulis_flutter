@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../model/user_model.dart';
 import '../service/pesanan_service.dart';
 
 // ─────────────────────────────────────────────
@@ -62,7 +62,8 @@ class _PesananPageState extends State<PesananPage> {
   }
 
   Future<void> getPesanan() async {
-    final data = await PesananService.getPesanan();
+    final email = UserModel.currentUser?.email ?? "";
+    final data = await PesananService.getPesanan(email: email);
 
     setState(() {
       pesanan = data;
